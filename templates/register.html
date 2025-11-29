@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Crear Cuenta - El Rincón del Lector</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#13a4ec",
+            "background-light": "#f6f7f8",
+            "background-dark": "#101c22",
+          },
+          fontFamily: {
+            "display": ["Lexend", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
+    }
+  </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-white">
+<div class="relative flex min-h-screen w-full flex-col">
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-white/10 bg-background-dark/80 px-4 py-3 backdrop-blur-sm sm:px-6 lg:px-8">
+  <a class="flex items-center gap-4 text-white" href="#">
+    <div class="size-6 text-primary">
+      <!-- ...logo svg... -->
+    </div>
+    <h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">El Rincón del Lector</h2>
+  </a>
+  <div class="flex items-center gap-2">
+    <a href="{{ url_for('login') }}" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#283339] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#3a454c] transition-colors">
+      <span class="truncate">Iniciar Sesión</span>
+    </a>
+  </div>
+</header>
+<main class="flex flex-grow items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+<div class="w-full max-w-md space-y-8">
+<!-- Reemplazar el formulario estático por el formulario WTForms -->
+<div class="rounded-xl bg-[#1c2327] p-8 shadow-lg">
+  <div class="text-center">
+    <h2 class="text-3xl font-bold text-white">Crear Cuenta</h2>
+    <p class="mt-2 text-[#9db0b9]">Únete a nuestra comunidad de lectores.</p>
+  </div>
+
+  <form method="POST" action="{{ url_for('register') }}" class="mt-8 space-y-6">
+    {{ form.hidden_tag() }}
+
+    <div>
+      <label class="mb-2 block text-sm font-medium text-white" for="username">Nombre de usuario</label>
+      {{ form.username(class="form-input w-full rounded-lg border-none bg-[#283339] px-4 py-3 text-white placeholder:text-[#9db0b9] focus:outline-none focus:ring-2 focus:ring-primary", id="username") }}
+      {% if form.username.errors %}
+        <p class="text-red-400 text-sm mt-1">{{ form.username.errors[0] }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label class="mb-2 block text-sm font-medium text-white" for="password">Contraseña</label>
+      {{ form.password(class="form-input w-full rounded-lg border-none bg-[#283339] px-4 py-3 text-white placeholder:text-[#9db0b9] focus:outline-none focus:ring-2 focus:ring-primary", id="password") }}
+      {% if form.password.errors %}
+        <p class="text-red-400 text-sm mt-1">{{ form.password.errors[0] }}</p>
+      {% endif %}
+    </div>
+
+    {{ form.submit(class="w-full flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-colors", value="Crear Cuenta") }}
+  </form>
+
+  <div class="mt-6 text-center">
+    <p class="text-sm text-[#9db0b9]">
+      ¿Ya tienes una cuenta?
+      <a class="font-medium text-primary hover:underline" href="{{ url_for('login') }}">Iniciar Sesión</a>
+    </p>
+  </div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

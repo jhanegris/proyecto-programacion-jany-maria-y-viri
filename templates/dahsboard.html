@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dashboard de Selección de Libros</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#13a4ec",
+            "background-light": "#f6f7f8",
+            "background-dark": "#101c22",
+          },
+          fontFamily: {
+            "display": ["Lexend", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
+    }
+  </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark">
+<div class="relative flex min-h-screen w-full flex-col">
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-white/10 bg-background-dark/80 px-4 py-3 backdrop-blur-sm sm:px-6 lg:px-8">
+<div class="flex items-center gap-4 text-white">
+<button class="flex items-center justify-center p-2 rounded-full hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="relative">
+<button class="flex items-center gap-2 text-white text-lg font-bold leading-tight tracking-[-0.015em] hover:text-primary transition-colors">
+<span>Todos los libros</span>
+<span class="material-symbols-outlined text-base">expand_more</span>
+</button>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-white/50">search</span>
+<input class="h-10 w-full max-w-xs rounded-lg border-none bg-[#283339] pl-10 pr-4 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Buscar libros..." type="search"/>
+</div>
+<button class="flex items-center justify-center p-2 rounded-full hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-white">filter_list</span>
+</button>
+<div class="w-10 h-10 rounded-full bg-center bg-cover" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC4YTP-hjxdGEwcGiv5ADeUmySgC7DkbybBIkBOXkCe6QnVdxoPjy54ZzBLxOob_E72QfheJDDfsb2WlSkiaPeayjYyx8N-Rw5HVSPZvIg-ugkBmYnDPmoU_ZR2LrGzhFL-j3-Mc8gIlOhOKpYqrIr0U4i8NLVEMbM04TniDztMeEtvDiGWx034H_iHFojLgOXJV2rSG8_E_TmIaJeJ8MPas4_ouW060mP_ZReAGrMb9xE7Hdgb4UsbhwlR2A8xrOGRtz2Zo4VmpZg')"></div>
+</div>
+</header>
+<main class="flex-grow">
+<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-4 gap-y-8">
+<div class="flex flex-col items-center">
+<div class="w-full bg-center bg-no-repeat aspect-[3/4] bg-cover rounded-lg flex flex-col shadow-lg hover:-translate-y-2 transition-transform duration-300" data-alt="Book cover for El Viento Sabe mi Nombre" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDOSPk1UUAKIxQoVeVZnJp962L1SZMjTDo5DJSx0ltlmByVUunJBHDvzcmhGXlRrHIA9izVBTZI9b6nbgk1nZW4HB4AnEmZ5xq7ur_XtyEBf3jmqywAAN38PaZom6YCYjzIZdWgWmU-f2ZbPZfJIt_hWPXMfB_a6J9Ul1EVuTxWOu38orNTktyqwsbN4SXgexQq2dcJRYbbwj-DiAHDyRM0N3GS6FDMxulYjZiuK_cWFg5t1-CoXMJ0T9Uqrx8dVm8ZOG2GKBrd-Gc");'></div>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-full bg-center bg-no-repeat aspect-[3/4] bg-cover rounded-lg flex flex-col shadow-lg hover:-translate-y-2 transition-transform duration-300" data-alt="Book cover for La Sombra del Viento" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDakFITeT86E46jT3uJpe4Ce3g1oEd4xJqltGe2UlTPVKyTrqGO9Yj-39BRKDkSmWm5mGYliLo6fxCl5sktnzMECBw1S46Cgt2ckFdRrbtaeW3b9-gBP4hs-A-Yon561utJPMsf8QReUzOT-AQlwhfTPSPIfE642Gt-Co7KATJh7MwxB-MEiRPxA645YPy97VraQXwh6gmr5BTaNG3z7DXa9oW5MIJnCuo10iaF79Jo-N6LJDgpXjWuRh6USDe5fxj401kXDDed3zk");'></div>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-full bg-center bg-no-repeat aspect-[3/4] bg-cover rounded-lg flex flex-col shadow-lg hover:-translate-y-2 transition-transform duration-300" data-alt="Book cover for Cien Años de Soledad" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC9BmVALio8xiVhTyTp28hqr3kU0off4xxc-fHbl3q6r9qriDsAWVmzQZzx6_VytboXRTG6ObOrwwLLkIUuC5HaMnywAPZs_0c2e6IcC5slk4vZ8bHqziarnc9pOMr2UJVjdBi3zc69XHRU5NCsj1cUovsBl9IId14puggmwmCTwy1jK6DCCvpwolsRu-XvhpcTcY3rBGItZeZpHN22_1dy0J4XpiiW2YHjiXwHoF3tSaBZ1BNS8VYO2Hl-BFtRa8ATYJ46BNcUqOo");'></div>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-full bg-center bg-no-repeat aspect-[3/4] bg-cover rounded-lg flex flex-col shadow-lg hover:-translate-y-2 transition-transform duration-300" data-alt="Book cover for Fuego y Sangre" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCkTcf5FFKAzNrxxjlkDRmPmJ6jLPBX32gJznTJ8IyYsMy5sUPVT0n9Q5NBYu6XONrNgIdpJZvhrjpEtqYO52i157IzrDQtD-nc26STPth5OXXwW0VNtxX33QKxtk7ydlLFMwmFuBAEW4-f1f1lc33ol2S64T2sEQIaoil_8jOSjoUocdqqEChGlhuVlD2b9vw3Am4L3oZtuBZIYcqw2SBExa6g7aEm3WYrfMctFkD4Vy0GrR8yjIB5HvV9AIpwJepFxhwxis5xfUA");'></div>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-full bg-center bg-no-repeat aspect-[3/4] bg-cover rounded-lg flex flex-col shadow-lg hover:-translate-y-2 transition-transform duration-300" data-alt="Book cover for Dune" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC8BjZ9usl667Wck8HtHI3-X7F-TC5NbQbiZL_W-ZewfzdurzMQQpM_earjK_y9HNDA8YD1hRRvCefLy_mN3da5J0IQiGEmbyH8eavyTsj_nrDJifxCF7Gldxjr1-55S3yqcYdozhQ1UiJtnmXSpaGxuhLdTqGCz8gCkecwnsC6l2FbFjVbwzla7raU0IoX_-FLPdCU3NYayqOf3mSycFQeemVrEsBiMyarLruY_eMA5IqhktHvD1fc-KMxtdvgC64vGcBeCOuXSws");'></div>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-full bg-center bg-no-repeat aspect-[3/4] bg-cover rounded-lg flex flex-col shadow-lg hover:-translate-y-2 transition-transform duration-300" data-alt="Book cover for The Midnight Library" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA90XjMppmLRAYeMivE2as_pn0mjh25b4ZLnoLLDRrGVdNGmw4A3jiE5uVIizf6gbrC-OFFdxl6kGE5vT5WVFD1F4p7SoWOAQB_KeFPSf5qZB9F9LZ0M62eiP2bctE0q64kooB_e7Z6KmXU2RXjvHhZQDcg1gBdvwMai-TYYQJ2LGNFcoz-EGdOCP4slFQu5OonZgJrDxKHxd8H_TURigmEPi0_wbGm3VhMihuQ4lHTpWSxdC3bjVykeJvHLMsR_pM1iLCR12r5RdU')"></div>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-full bg-center bg-no-repeat aspect-[3/4] bg-cover rounded-lg flex flex-col shadow-lg hover:-translate-y-2 transition-transform duration-300" data-alt="Book cover for Atomic Habits" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAlgdqUoE5krxG1NRHxpPj86o_ovHWjrVT_gkvr1Dc7OFXQqJkRVoadcrl6xfAIfUHrFErbLZ_7OhGlyrsm6hfIRP2hqLyIoiGIOxRgApEohEsmwpfPKXP3Q4KgzfehYmB4Oo1xtI91CLtvYAVkANjLbgpr1K1lIQ08faQpzkUanrrfSID5D2cSkZpJc26W77zDfDsf7k_mm3JewGMEDLLiY4UzxVSnoNwBCx7uGxl8QnhzCfg6Y7r2U8tOUMb6J_VEwKQQ269aLzs')"></div>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-full bg-center bg-no-repeat aspect-[3/4] bg-cover rounded-lg flex flex-col shadow-lg hover:-translate-y-2 transition-transform duration-300" data-alt="Book cover for The Alchemist" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCQF6jMpUcZyw_ajiY1yWT2yk7bd2Q7FhM9AiGfE7OktW8Ez-oXujEHELQPerQrJp6C4hEFFboAsUGX7qWu5f64ZnI6iVEQ15Tne_35BZ9ORE35yM8-vI14w3P0mmQMtRv7Xv9M6n36o5J1IA6W_WrgVTHKd0oU5YBNvfFvEl1804yg1T9yWFUV_VWD14RQ_CwuexbBW6luNXDrJyVN2ABQ1tAbS5hq_DdQuIh7b-Q79Ejn2eT44Cw6ZvV3gdXWJjJ7zNFaPGyAurI')"></div>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-full bg-center bg-no-repeat aspect-[3/4] bg-cover rounded-lg flex flex-col shadow-lg hover:-translate-y-2 transition-transform duration-300" data-alt="Book cover for Project Hail Mary" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuChhwrnKZJ4f7-z1DZHWkDzI8XXn2FWuicRCpzQCmoEYAyuPQ21wn9v8QjnUBOUL8P--0klBUe9sDvnaqh98J-yvVfZEtXnAZE1eUMysXR6i57yFskBPSfWSrGW3kKOcfdE2qkx7vFPNE6AJuN7OBdPmhjAanFMcAGcdOvN2tlKnNLjj79zDLR3Ggy9BjgHdLJ-6XmZaPSrLxtXDT53a1n3Z4ORHb4M1k7vKkm7vFOSb1xuqhvO0lJOy-GKH6Xt0_RV2hRIiQkoRFY')"></div>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-full bg-center bg-no-repeat aspect-[3/4] bg-cover rounded-lg flex flex-col shadow-lg hover:-translate-y-2 transition-transform duration-300" data-alt="Book cover for Circe" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAJiMQPIKQggGTPHhrjab4QOOjpl6OBl1JGWnlH9I3g18YVu1rkSL89by0bgNi2gE3E8ZOg7XeAVzUKAXx87OlLfve2yPZiqnQNgn8l9H7NEJmS6sG017tUJaCMO5dTfmN-doe8sRF9wk7oeg1abJJIMO-8PB36dpq3Tf6dG2YGWp8hYOnvs5ofss6cDMzm_K57LICFPpqhSolaMMlX8klsXpzh-Lu_w7Urn22BYJk07NwJhwW3HdJET7hPQ196gSu-dVhQxIntQHg')"></div>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-full bg-center bg-no-repeat aspect-[3/4] bg-cover rounded-lg flex flex-col shadow-lg hover:-translate-y-2 transition-transform duration-300" data-alt="Book cover for Where the Crawdads Sing" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBSIEQ0_KspGR4j3yrd4ae8wpFlld6s_E42l98GhnFFS-b0TS5nStLRx0T9yehFOc0SAu_1tkfk3JCcTvGqazpHmbKeEAYwbY3l1LgGU1bQyr_fB4-fnqDogHwvfz7G-OLHtXyHeFp6vctp0ucgbYvYIDH19M2cfx8qTvTK88FAfjAHUJNrxSISl57fF19LnVNhRWC6SpiWXy24oi-NF-_A45XJpbDa5cTR-_J4qsean5cx-oOEsZ9xX7s8QGdM5JqJBm0S-ZQCbRA')"></div>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-full bg-center bg-no-repeat aspect-[3/4] bg-cover rounded-lg flex flex-col shadow-lg hover:-translate-y-2 transition-transform duration-300" data-alt="Book cover for El Viento Sabe mi Nombre" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDOSPk1UUAKIxQoVeVZnJp962L1SZMjTDo5DJSx0ltlmByVUunJBHDvzcmhGXlRrHIA9izVBTZI9b6nbgk1nZW4HB4AnEmZ5xq7ur_XtyEBf3jmqywAAN38PaZom6YCYjzIZdWgWmU-f2ZbPZfJIt_hWPXMfB_a6J9Ul1EVuTxWOu38orNTktyqwsbN4SXgexQq2dcJRYbbwj-DiAHDyRM0N3GS6FDMxulYjZiuK_cWFg5t1-CoXMJ0T9Uqrx8dVm8ZOG2GKBrd-Gc");'></div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>
