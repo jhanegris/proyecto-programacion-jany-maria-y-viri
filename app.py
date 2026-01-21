@@ -234,13 +234,6 @@ def uploaded_file(filename):
     """Serve uploaded files (optional - for direct file access)"""
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-@app.route('/cancel', methods=['GET'])
-def cancel():
-    """Handle cancel action"""
-    return redirect(url_for('index'))
-
-# ===== ERROR HANDLERS =====
-
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({'error': 'Page not found'}), 404
