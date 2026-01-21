@@ -9,7 +9,7 @@ from flask_bcrypt import Bcrypt
 app = Flask(__name__)
 
 # --- Configuración MUST be antes de instanciar SQLAlchemy/Bcrypt ---
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db' # Usa SQLite para simplicidad
 app.config['SECRET_KEY'] = 'your_secret_key'  # cambia por una clave real en producción
 
 db = SQLAlchemy(app)
