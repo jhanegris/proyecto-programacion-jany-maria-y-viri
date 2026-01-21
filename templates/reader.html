@@ -4,200 +4,541 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1317ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101122",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
     <style>
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .reading-content { line-height: 1.8; font-size: 1.1rem; }
-        .page-transition { transition: opacity 0.3s ease; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2d2f4a;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #1317ec;
+        }
+        .reading-content {
+            line-height: 1.8;
+            font-size: 1.125rem;
+        }
+        .reading-content p {
+            margin-bottom: 1.5rem;
+        }
+        @media (max-width: 768px) {
+            .reading-content {
+                font-size: 1rem;
+                line-height: 1.6;
+            }
+        }
     </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen">
-    <div class="flex flex-col min-h-screen w-full lg:max-w-6xl mx-auto">
-        <!-- Header -->
-        <header class="sticky top-0 z-20 flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md p-4 border-b border-gray-200 dark:border-white/5">
-            <div class="flex items-center gap-4">
-                <a href="/" class="text-primary flex size-10 items-center justify-center cursor-pointer hover:bg-primary/10 rounded-full transition-colors">
-                    <span class="material-symbols-outlined">arrow_back</span>
-                </a>
-                <div>
-                    <h1 class="text-xl font-bold">{{ metadata.title if metadata else filename }}</h1>
-                    {% if metadata.author %}
-                    <p class="text-sm text-slate-500 dark:text-gray-400">by {{ metadata.author }}</p>
-                    {% endif %}
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen overflow-hidden">
+    <div class="flex h-screen w-full flex-col lg:flex-row overflow-hidden">
+        <!-- Sidebar - Table of Contents -->
+        <aside id="sidebar" class="hidden lg:flex w-80 shrink-0 flex-col border-r border-slate-200 dark:border-slate-800 bg-background-light/50 dark:bg-background-dark/50 backdrop-blur-md">
+            <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary">menu_book</span>
+                <h2 class="font-bold text-lg">Índice</h2>
+            </div>
+            <nav id="toc-content" class="flex-1 overflow-y-auto p-4 space-y-2">
+                <!-- Table of contents will be loaded here dynamically -->
+                <div class="text-center py-8 text-slate-500 dark:text-slate-400">
+                    <span class="material-symbols-outlined text-4xl mb-2">menu_book</span>
+                    <p>Cargando índice...</p>
+                </div>
+            </nav>
+            <div class="p-6 border-t border-slate-200 dark:border-slate-800">
+                <div class="flex items-center justify-between text-xs text-slate-500 uppercase tracking-widest mb-2">
+                    <span>Progreso</span>
+                    <span id="progress-percent" class="text-primary font-bold">{{ progress }}%</span>
+                </div>
+                <div class="h-1.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="bg-primary h-full" style="width: {{ progress }}%"></div>
                 </div>
             </div>
-            <div class="ml-auto flex items-center gap-4">
-                <span class="text-sm text-slate-500 dark:text-gray-400">{{ file_type }} • {{ total_pages }} pages</span>
-                <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800">
-                    <span class="material-symbols-outlined">dark_mode</span>
-                </button>
-            </div>
-        </header>
+        </aside>
 
-        <!-- Reading Content -->
-        <main class="flex-1 p-4 lg:p-8 overflow-y-auto">
-            <div class="max-w-3xl mx-auto">
-                <!-- Page Navigation -->
-                <div class="flex items-center justify-between mb-8 p-4 bg-white dark:bg-[#191a33] rounded-xl shadow">
-                    <button id="prevPage" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span class="material-symbols-outlined">chevron_left</span>
-                        Previous
+        <!-- Main Content Area -->
+        <div class="relative flex flex-1 flex-col min-w-0">
+            <!-- Header -->
+            <header class="fixed top-0 left-0 lg:left-0 right-0 z-50 flex items-center bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md p-4 lg:px-8 lg:py-4 justify-between border-b border-slate-200 dark:border-slate-800">
+                <div class="flex items-center gap-4">
+                    <button id="back-button" class="text-primary flex size-10 shrink-0 items-center justify-center cursor-pointer lg:hover:bg-slate-100 dark:lg:hover:bg-slate-800 rounded-full transition-colors">
+                        <span class="material-symbols-outlined" style="font-size: 28px;">chevron_left</span>
                     </button>
-                    
-                    <div class="flex items-center gap-4">
-                        <input type="number" id="pageInput" min="1" max="{{ total_pages }}" value="1" class="w-20 px-3 py-2 text-center border border-gray-300 dark:border-[#323367] rounded-lg bg-transparent">
-                        <span class="text-slate-500 dark:text-gray-400">of {{ total_pages }}</span>
+                    <button id="toggle-sidebar" class="hidden lg:flex text-primary items-center justify-center cursor-pointer lg:hover:bg-slate-100 dark:lg:hover:bg-slate-800 rounded-full transition-colors">
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
+                    <div class="hidden lg:flex flex-col">
+                        <h2 class="text-slate-900 dark:text-white text-sm font-bold leading-tight" id="book-title">{{ metadata.title if metadata else 'Book Title' }}</h2>
+                        <p class="text-slate-500 dark:text-slate-400 text-[10px] uppercase tracking-widest" id="book-author">{{ metadata.author if metadata else 'Unknown Author' }}</p>
                     </div>
-                    
-                    <button id="nextPage" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                        Next
+                </div>
+                <div class="flex flex-col items-center flex-1 lg:hidden">
+                    <h2 class="text-slate-900 dark:text-white text-sm font-bold leading-tight tracking-tight text-center truncate max-w-[200px]" id="mobile-book-title">{{ metadata.title[:30] + '...' if metadata and metadata.title|length > 30 else metadata.title if metadata else 'Book' }}</h2>
+                    <p class="text-slate-500 dark:text-slate-400 text-[10px] uppercase tracking-widest mt-0.5" id="mobile-book-author">{{ metadata.author if metadata else 'Author' }}</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="hidden lg:flex items-center gap-6 mr-6 border-r border-slate-200 dark:border-slate-800 pr-6">
+                        <button id="font-size-decrease" class="text-slate-500 hover:text-primary transition-colors flex items-center gap-2">
+                            <span class="material-symbols-outlined">text_decrease</span>
+                            <span class="text-xs font-semibold uppercase">A-</span>
+                        </button>
+                        <button id="font-size-increase" class="text-slate-500 hover:text-primary transition-colors flex items-center gap-2">
+                            <span class="material-symbols-outlined">text_increase</span>
+                            <span class="text-xs font-semibold uppercase">A+</span>
+                        </button>
+                        <button id="toggle-bookmark" class="text-slate-500 hover:text-primary transition-colors flex items-center gap-2">
+                            <span class="material-symbols-outlined">bookmark</span>
+                            <span class="text-xs font-semibold uppercase">Marcar</span>
+                        </button>
+                        <a href="/" class="text-slate-500 hover:text-primary transition-colors flex items-center gap-2">
+                            <span class="material-symbols-outlined">upload_file</span>
+                            <span class="text-xs font-semibold uppercase">Subir</span>
+                        </a>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <p id="header-progress" class="text-primary text-xs font-bold leading-normal tracking-wide shrink-0">{{ progress }}%</p>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Reading Content -->
+            <main class="flex-1 overflow-y-auto px-4 md:px-6 pt-20 pb-32 lg:pb-16 lg:pt-24">
+                <article class="max-w-3xl mx-auto w-full">
+                    <h3 id="chapter-title" class="text-slate-900 dark:text-white tracking-tight text-2xl lg:text-3xl font-bold leading-tight text-left pb-8 pt-4">Página {{ current_page }}</h3>
+                    <div id="reading-content" class="reading-content space-y-6 leading-relaxed text-slate-700 dark:text-slate-300">
+                        {{ content|safe }}
+                    </div>
+                </article>
+            </main>
+
+            <!-- Desktop Floating Controls -->
+            <div class="hidden lg:flex fixed right-8 top-1/2 -translate-y-1/2 flex-col gap-4 z-40">
+                <div class="bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-xl border border-slate-200 dark:border-slate-800 p-3 rounded-2xl flex flex-col gap-4 shadow-2xl">
+                    <button id="theme-toggle" class="size-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-primary hover:text-white transition-all group">
+                        <span id="theme-icon" class="material-symbols-outlined">light_mode</span>
+                    </button>
+                    <div class="h-px bg-slate-200 dark:bg-slate-800 mx-2"></div>
+                    <button id="prev-page" class="size-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-primary hover:text-white transition-all">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </button>
+                    <button id="next-page" class="size-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-primary hover:text-white transition-all">
                         <span class="material-symbols-outlined">chevron_right</span>
                     </button>
                 </div>
-                
-                <!-- Reading Area -->
-                <div class="bg-white dark:bg-[#191a33] rounded-xl shadow-lg p-6 lg:p-8 mb-8 page-transition" id="contentArea">
-                    <div class="reading-content" id="pageContent">
-                        {{ first_page|safe }}
-                    </div>
-                </div>
-                
-                <!-- Reading Progress -->
-                <div class="mb-8">
-                    <div class="flex justify-between text-sm text-slate-500 dark:text-gray-400 mb-2">
-                        <span>Reading Progress</span>
-                        <span id="progressPercent">1%</span>
-                    </div>
-                    <div class="h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
-                        <div id="progressBar" class="h-full bg-primary rounded-full" style="width: 1%"></div>
-                    </div>
-                </div>
-                
-                <!-- Book Details -->
-                {% if metadata %}
-                <div class="bg-white dark:bg-[#191a33] rounded-xl shadow p-6">
-                    <h3 class="text-lg font-bold mb-4">Book Details</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <p class="text-sm text-slate-500 dark:text-gray-400">Title</p>
-                            <p class="font-medium">{{ metadata.title }}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-slate-500 dark:text-gray-400">Author</p>
-                            <p class="font-medium">{{ metadata.author }}</p>
-                        </div>
-                        {% if metadata.genre %}
-                        <div>
-                            <p class="text-sm text-slate-500 dark:text-gray-400">Genre</p>
-                            <p class="font-medium">{{ metadata.genre }}</p>
-                        </div>
-                        {% endif %}
-                        <div>
-                            <p class="text-sm text-slate-500 dark:text-gray-400">Visibility</p>
-                            <p class="font-medium">{{ 'Public' if metadata.public == 'on' else 'Private' }}</p>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-        </main>
-        
-        <!-- Footer -->
-        <footer class="p-4 border-t border-gray-200 dark:border-white/5">
-            <div class="max-w-3xl mx-auto flex justify-between items-center">
-                <a href="/" class="flex items-center gap-2 px-4 py-2 text-slate-500 dark:text-gray-400 hover:text-primary transition-colors">
-                    <span class="material-symbols-outlined">upload_file</span>
-                    Upload Another
-                </a>
-                <div class="text-sm text-slate-500 dark:text-gray-400">
-                    Press <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded">←</kbd> and <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded">→</kbd> to navigate
+                <div class="bg-black/60 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/10 text-center">
+                    <p id="page-indicator" class="text-white/80 text-[11px] font-medium leading-tight">
+                        Página {{ current_page }}<br/>
+                        <span class="opacity-50">de {{ total_pages }}</span>
+                    </p>
                 </div>
             </div>
-        </footer>
+
+            <!-- Mobile Footer Controls -->
+            <footer class="lg:hidden fixed bottom-0 left-0 right-0 z-50 flex flex-col bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 pb-8 pt-4 px-6 shadow-[0_-10px_30px_rgba(0,0,0,0.1)]">
+                <!-- Font Size Slider -->
+                <div class="@container mb-4">
+                    <div class="relative flex w-full items-center gap-3">
+                        <span class="material-symbols-outlined text-slate-500 dark:text-slate-400" style="font-size: 20px;">text_decrease</span>
+                        <div class="flex h-1.5 flex-1 rounded-full bg-slate-200 dark:bg-slate-700">
+                            <div id="font-slider-track" class="h-full rounded-full bg-primary"></div>
+                            <div class="relative">
+                                <div id="font-slider-thumb" class="absolute -left-2 -top-1.5 size-5 rounded-full bg-primary shadow-lg ring-4 ring-white dark:ring-background-dark cursor-pointer"></div>
+                            </div>
+                        </div>
+                        <span class="material-symbols-outlined text-slate-500 dark:text-slate-400" style="font-size: 24px;">text_increase</span>
+                    </div>
+                </div>
+                
+                <!-- Control Buttons -->
+                <div class="flex items-center justify-between">
+                    <button id="mobile-toc" class="flex flex-col items-center gap-1 group">
+                        <div class="flex items-center justify-center size-10 rounded-xl bg-slate-100 dark:bg-slate-800 group-active:scale-95 transition-transform">
+                            <span class="material-symbols-outlined text-slate-700 dark:text-slate-200">menu_book</span>
+                        </div>
+                        <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-tighter">Índice</span>
+                    </button>
+                    <button id="mobile-prev" class="flex flex-col items-center gap-1 group">
+                        <div class="flex items-center justify-center size-10 rounded-xl bg-slate-100 dark:bg-slate-800 group-active:scale-95 transition-transform">
+                            <span class="material-symbols-outlined text-slate-700 dark:text-slate-200">chevron_left</span>
+                        </div>
+                        <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-tighter">Anterior</span>
+                    </button>
+                    <button id="mobile-next" class="flex flex-col items-center gap-1 group">
+                        <div class="flex items-center justify-center size-10 rounded-xl bg-slate-100 dark:bg-slate-800 group-active:scale-95 transition-transform">
+                            <span class="material-symbols-outlined text-slate-700 dark:text-slate-200">chevron_right</span>
+                        </div>
+                        <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-tighter">Siguiente</span>
+                    </button>
+                    <button id="mobile-bookmark" class="flex flex-col items-center gap-1 group">
+                        <div class="flex items-center justify-center size-10 rounded-xl bg-slate-100 dark:bg-slate-800 group-active:scale-95 transition-transform">
+                            <span class="material-symbols-outlined text-slate-700 dark:text-slate-200">bookmark</span>
+                        </div>
+                        <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-tighter">Marcador</span>
+                    </button>
+                </div>
+            </footer>
+            
+            <!-- Mobile Page Indicator -->
+            <div class="lg:hidden fixed bottom-32 left-1/2 -translate-x-1/2 z-40">
+                <div class="bg-black/60 backdrop-blur-sm px-3 py-1 rounded-full border border-white/10">
+                    <p id="mobile-page-indicator" class="text-white/80 text-[11px] font-medium">Página {{ current_page }} de {{ total_pages }}</p>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- JavaScript -->
     <script>
-        let currentPage = 1;
+        // ===== GLOBAL VARIABLES =====
+        let currentPage = {{ current_page }};
         const totalPages = {{ total_pages }};
         const filename = "{{ filename }}";
+        let fontSize = 16; // Base font size in pixels
+        let isBookmarked = false;
         
+        // ===== DOM ELEMENT REFERENCES =====
+        const readingContent = document.getElementById('reading-content');
+        const chapterTitle = document.getElementById('chapter-title');
+        const pageIndicator = document.getElementById('page-indicator');
+        const mobilePageIndicator = document.getElementById('mobile-page-indicator');
+        const progressBar = document.getElementById('progress-bar');
+        const progressPercent = document.getElementById('progress-percent');
+        const headerProgress = document.getElementById('header-progress');
+        
+        // ===== INITIALIZATION =====
         document.addEventListener('DOMContentLoaded', function() {
-            // Page navigation
-            document.getElementById('prevPage').addEventListener('click', () => navigateToPage(currentPage - 1));
-            document.getElementById('nextPage').addEventListener('click', () => navigateToPage(currentPage + 1));
+            // Load table of contents
+            loadTableOfContents();
             
-            // Page input
-            document.getElementById('pageInput').addEventListener('change', function() {
-                const page = parseInt(this.value);
-                if (page >= 1 && page <= totalPages) {
-                    navigateToPage(page);
-                }
-            });
+            // Set up event listeners
+            setupEventListeners();
             
-            // Keyboard navigation
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'ArrowLeft') navigateToPage(currentPage - 1);
-                if (e.key === 'ArrowRight') navigateToPage(currentPage + 1);
-            });
+            // Update UI state
+            updateUI();
             
-            // Theme toggle
-            document.getElementById('themeToggle').addEventListener('click', function() {
-                const html = document.documentElement;
-                const isDark = html.classList.contains('dark');
-                const icon = this.querySelector('.material-symbols-outlined');
-                
-                if (isDark) {
-                    html.classList.remove('dark');
-                    icon.textContent = 'light_mode';
-                } else {
-                    html.classList.add('dark');
-                    icon.textContent = 'dark_mode';
-                }
-            });
-            
-            // Update progress
-            updateProgress();
+            // Auto-save progress
+            saveProgress();
         });
         
-        async function navigateToPage(page) {
-            if (page < 1 || page > totalPages || page === currentPage) return;
-            
-            // Show loading
-            const contentArea = document.getElementById('contentArea');
-            contentArea.style.opacity = '0.5';
+        // ===== TABLE OF CONTENTS =====
+        async function loadTableOfContents() {
+            try {
+                const response = await fetch(`/api/toc/${filename}`);
+                const data = await response.json();
+                
+                if (data.success && data.toc && data.toc.length > 0) {
+                    const tocContainer = document.getElementById('toc-content');
+                    tocContainer.innerHTML = '';
+                    
+                    data.toc.forEach((item, index) => {
+                        const tocItem = document.createElement('a');
+                        tocItem.href = '#';
+                        tocItem.className = `block p-3 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800/50 text-sm transition-colors ${item.level === 1 ? 'font-medium' : 'text-slate-500'}`;
+                        tocItem.style.marginLeft = `${(item.level - 1) * 16}px`;
+                        tocItem.textContent = item.title || `Página ${item.page}`;
+                        
+                        tocItem.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            navigateToPage(item.page);
+                        });
+                        
+                        tocContainer.appendChild(tocItem);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading TOC:', error);
+            }
+        }
+        
+        // ===== PAGE NAVIGATION =====
+        async function navigateToPage(pageNumber) {
+            if (pageNumber < 1) pageNumber = 1;
+            if (pageNumber > totalPages) pageNumber = totalPages;
+            if (pageNumber === currentPage) return;
             
             try {
-                const response = await fetch(`/api/get_page/${filename}/${page}`);
+                // Show loading state
+                readingContent.innerHTML = '<div class="text-center py-12"><span class="material-symbols-outlined animate-spin text-4xl text-primary">sync</span><p class="mt-4 text-slate-500">Cargando página...</p></div>';
+                
+                const response = await fetch(`/api/page/${filename}/${pageNumber}`);
                 const data = await response.json();
                 
                 if (data.success) {
-                    document.getElementById('pageContent').innerHTML = data.content;
-                    document.getElementById('pageInput').value = page;
-                    currentPage = page;
+                    currentPage = pageNumber;
+                    
+                    // Update content
+                    readingContent.innerHTML = formatContent(data.content);
+                    chapterTitle.textContent = `Página ${currentPage}`;
+                    
+                    // Update indicators
+                    updatePageIndicators();
                     updateProgress();
                     
-                    // Update button states
-                    document.getElementById('prevPage').disabled = page === 1;
-                    document.getElementById('nextPage').disabled = page === totalPages;
+                    // Save progress
+                    saveProgress();
+                    
+                    // Scroll to top
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 } else {
-                    alert('Error loading page: ' + data.error);
+                    throw new Error(data.error || 'Failed to load page');
                 }
             } catch (error) {
-                alert('Network error: ' + error.message);
+                console.error('Error navigating to page:', error);
+                readingContent.innerHTML = `<div class="text-center py-12 text-red-500"><span class="material-symbols-outlined text-4xl">error</span><p class="mt-4">Error cargando la página</p></div>`;
             }
+        }
+        
+        function formatContent(text) {
+            if (!text) return '<p class="text-slate-500 italic">No hay contenido en esta página.</p>';
             
-            // Restore opacity
-            contentArea.style.opacity = '1';
-            
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // Split by newlines and wrap each paragraph
+            const paragraphs = text.split('\n').filter(p => p.trim());
+            return paragraphs.map(p => `<p>${p.trim()}</p>`).join('');
+        }
+        
+        // ===== UI UPDATES =====
+        function updateUI() {
+            updatePageIndicators();
+            updateProgress();
+            updateFontSize();
+        }
+        
+        function updatePageIndicators() {
+            pageIndicator.innerHTML = `Página ${currentPage}<br/><span class="opacity-50">de ${totalPages}</span>`;
+            mobilePageIndicator.textContent = `Página ${currentPage} de ${totalPages}`;
         }
         
         function updateProgress() {
-            const percent = Math.round((currentPage / totalPages) * 100);
-            document.getElementById('progressPercent').textContent = percent + '%';
-            document.getElementById('progressBar').style.width = percent + '%';
+            const progress = totalPages > 0 ? Math.round((currentPage / totalPages) * 100) : 0;
+            
+            // Update progress bar
+            progressBar.style.width = `${progress}%`;
+            progressPercent.textContent = `${progress}%`;
+            headerProgress.textContent = `${progress}%`;
+        }
+        
+        function updateFontSize() {
+            readingContent.style.fontSize = `${fontSize}px`;
+            
+            // Update slider position (assuming slider range 12-24)
+            const sliderPercentage = ((fontSize - 12) / (24 - 12)) * 100;
+            document.getElementById('font-slider-track').style.width = `${sliderPercentage}%`;
+        }
+        
+        // ===== EVENT LISTENERS SETUP =====
+        function setupEventListeners() {
+            // Navigation buttons
+            document.getElementById('prev-page')?.addEventListener('click', () => navigateToPage(currentPage - 1));
+            document.getElementById('next-page')?.addEventListener('click', () => navigateToPage(currentPage + 1));
+            document.getElementById('mobile-prev')?.addEventListener('click', () => navigateToPage(currentPage - 1));
+            document.getElementById('mobile-next')?.addEventListener('click', () => navigateToPage(currentPage + 1));
+            
+            // Back button
+            document.getElementById('back-button').addEventListener('click', () => {
+                window.location.href = '/library';
+            });
+            
+            // Theme toggle
+            document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+            
+            // Font size controls
+            document.getElementById('font-size-decrease')?.addEventListener('click', () => {
+                if (fontSize > 12) {
+                    fontSize -= 1;
+                    updateFontSize();
+                }
+            });
+            
+            document.getElementById('font-size-increase')?.addEventListener('click', () => {
+                if (fontSize < 24) {
+                    fontSize += 1;
+                    updateFontSize();
+                }
+            });
+            
+            // Mobile font slider
+            setupMobileFontSlider();
+            
+            // Toggle sidebar
+            document.getElementById('toggle-sidebar')?.addEventListener('click', () => {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.toggle('hidden');
+            });
+            
+            document.getElementById('mobile-toc')?.addEventListener('click', () => {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.toggle('hidden');
+            });
+            
+            // Bookmark toggle
+            document.getElementById('toggle-bookmark')?.addEventListener('click', toggleBookmark);
+            document.getElementById('mobile-bookmark')?.addEventListener('click', toggleBookmark);
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') navigateToPage(currentPage - 1);
+                if (e.key === 'ArrowRight') navigateToPage(currentPage + 1);
+                if (e.key === 'Home') navigateToPage(1);
+                if (e.key === 'End') navigateToPage(totalPages);
+            });
+        }
+        
+        function setupMobileFontSlider() {
+            const sliderTrack = document.getElementById('font-slider-track');
+            const sliderThumb = document.getElementById('font-slider-thumb');
+            const container = sliderTrack.parentElement;
+            
+            let isDragging = false;
+            
+            function updateSliderFromFontSize() {
+                const percentage = ((fontSize - 12) / (24 - 12)) * 100;
+                sliderTrack.style.width = `${percentage}%`;
+                sliderThumb.style.left = `calc(${percentage}% - 8px)`;
+            }
+            
+            function updateFontSizeFromPosition(clientX) {
+                const rect = container.getBoundingClientRect();
+                let percentage = ((clientX - rect.left) / rect.width) * 100;
+                percentage = Math.max(0, Math.min(100, percentage));
+                
+                // Convert percentage to font size (12-24)
+                fontSize = Math.round(12 + (percentage / 100) * 12);
+                updateFontSize();
+            }
+            
+            // Initial position
+            updateSliderFromFontSize();
+            
+            // Mouse events
+            sliderThumb.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                e.preventDefault();
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    updateFontSizeFromPosition(e.clientX);
+                }
+            });
+            
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+            
+            // Touch events for mobile
+            sliderThumb.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                e.preventDefault();
+            });
+            
+            document.addEventListener('touchmove', (e) => {
+                if (isDragging && e.touches.length > 0) {
+                    updateFontSizeFromPosition(e.touches[0].clientX);
+                }
+            });
+            
+            document.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+            
+            // Click on track
+            sliderTrack.parentElement.addEventListener('click', (e) => {
+                const rect = container.getBoundingClientRect();
+                updateFontSizeFromPosition(e.clientX);
+            });
+        }
+        
+        // ===== UTILITY FUNCTIONS =====
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.textContent = 'dark_mode';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                icon.textContent = 'light_mode';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        
+        function toggleBookmark() {
+            isBookmarked = !isBookmarked;
+            const buttons = [
+                document.getElementById('toggle-bookmark'),
+                document.getElementById('mobile-bookmark')
+            ];
+            
+            buttons.forEach(btn => {
+                if (btn) {
+                    const icon = btn.querySelector('.material-symbols-outlined');
+                    if (icon) {
+                        icon.textContent = isBookmarked ? 'bookmark_added' : 'bookmark';
+                    }
+                }
+            });
+            
+            // Save bookmark to server (optional)
+            // You can implement an API endpoint for bookmarks
+        }
+        
+        async function saveProgress() {
+            try {
+                await fetch(`/api/save_progress/${filename}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        current_page: currentPage
+                    })
+                });
+            } catch (error) {
+                console.error('Error saving progress:', error);
+            }
+        }
+        
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            document.getElementById('theme-icon').textContent = 'light_mode';
         }
     </script>
 </body>

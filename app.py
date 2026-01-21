@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, flash
+from flask import Flask, render_template, redirect, url_for, request, flash, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
@@ -66,6 +66,12 @@ def login():
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user)
             return redirect(url_for('dashboard'))
+        else:
+            flash('Usuario o contraseña incorrectos', 'error')
+    else:
+        if request.method == 'POST':
+            flash('Por favor completa el formulario correctamente.', 'error')
+
     return render_template("login.html", form=form)
 
 @app.route('/logout')
@@ -77,7 +83,9 @@ def logout():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-    return render_template("dashboard.html")
+    # El archivo de plantilla en templates/ está nombrado `dahsboard.html` (typo).
+    # Usamos el nombre existente para evitar TemplateNotFound.
+    return render_template("dahsboard.html")
 
 
 #
@@ -86,14 +94,10 @@ def dashboard():
 import os
 import json
 from datetime import datetime
-from flask import Flask, request, render_template, redirect, url_for, flash, jsonify, send_from_directory
-from werkzeug.utils import secure_filename
 import pymupdf
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key-here'
 app.config['UPLOAD_FOLDER'] = './uploads'
-app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024  # 20MB as per your HTML
+app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024  # 20MB
 ALLOWED_EXTENSIONS = {'pdf', 'epub'}
 
 # Ensure upload folder exists
@@ -102,21 +106,16 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# ===== MAIN ROUTES =====
+# ===== ROUTES =====
 
-@app.route('/')
+@app.route('/upload', methods=['GET'])
 def index():
     """Home page - shows upload form"""
     return render_template('upload.html')
 
-@app.route('/upload', methods=['GET', 'POST'])
+@app.route('/upload', methods=['POST'])
 def upload_file():
-    """Handle file upload (GET shows form, POST processes upload)"""
-    if request.method == 'GET':
-        # If someone visits /upload directly, redirect to home
-        return redirect(url_for('index'))
-    
-    # Handle POST request
+    """Handle file upload"""
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'}), 400
     
@@ -135,6 +134,14 @@ def upload_file():
         save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(save_path)
         
+        # Extract basic metadata from file
+        try:
+            doc = pymupdf.open(save_path)
+            total_pages = len(doc)
+            doc.close()
+        except:
+            total_pages = 0
+        
         # Create book metadata
         book_metadata = {
             'title': title or filename.rsplit('.', 1)[0],
@@ -142,27 +149,29 @@ def upload_file():
             'genre': genre,
             'public': public,
             'filename': filename,
-            'filepath': save_path,
-            'uploaded_at': datetime.now().isoformat()
+            'total_pages': total_pages,
+            'uploaded_at': datetime.now().isoformat(),
+            'current_page': 1,
+            'progress': 0
         }
         
         # Save metadata to JSON file
         metadata_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{filename}.meta.json")
         with open(metadata_path, 'w') as f:
-            json.dump(book_metadata, f, indent=4)
+            json.dump(book_metadata, f, indent=4, default=str)
         
         return jsonify({
             'success': True,
             'message': 'Book uploaded successfully',
             'filename': filename,
-            'redirect': url_for('read_file', filename=filename)
+            'redirect': url_for('reader', filename=filename)
         })
     
     return jsonify({'error': 'File type not allowed. Use PDF or EPUB.'}), 400
 
-@app.route('/read/<filename>', methods=['GET'])
-def read_file(filename):
-    """Render the reading interface for the uploaded file"""
+@app.route('/reader/<filename>')
+def reader(filename):
+    """Render the beautiful reader interface"""
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     metadata_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{filename}.meta.json")
     
@@ -177,76 +186,222 @@ def read_file(filename):
         flash('File not found')
         return redirect(url_for('index'))
     
-    # Determine file type and extract first page
-    file_ext = filename.rsplit('.', 1)[1].lower() if '.' in filename else ''
-    first_page_text = ""
+    # Get current page from metadata or default to 1
+    current_page = metadata.get('current_page', 1)
+    
+    # Get page content
+    content = ""
     total_pages = 0
     
     try:
-        if file_ext in ['pdf', 'epub']:
+        if filename.lower().endswith(('.pdf', '.epub')):
             doc = pymupdf.open(filepath)
             total_pages = len(doc)
             
-            # Get first page for preview
-            if total_pages > 0:
-                first_page = doc[0]
-                first_page_text = first_page.get_text()
+            # Get the current page content
+            if 1 <= current_page <= total_pages:
+                page = doc[current_page - 1]  # 0-indexed
+                content = page.get_text()
+            else:
+                # If invalid page, get first page
+                page = doc[0]
+                content = page.get_text()
+                current_page = 1
             
+            # Update metadata with total pages
+            metadata['total_pages'] = total_pages
             doc.close()
     except Exception as e:
         flash(f'Error reading file: {str(e)}')
         return redirect(url_for('index'))
     
+    # Update progress
+    progress = int((current_page / total_pages) * 100) if total_pages > 0 else 0
+    metadata['progress'] = progress
+    metadata['current_page'] = current_page
+    
+    # Save updated metadata
+    with open(metadata_path, 'w') as f:
+        json.dump(metadata, f, indent=4, default=str)
+    
     return render_template('reader.html',
                            filename=filename,
                            metadata=metadata,
-                           first_page=first_page_text[:500] + "..." if len(first_page_text) > 500 else first_page_text,
+                           content=content,
+                           current_page=current_page,
                            total_pages=total_pages,
-                           file_type=file_ext.upper())
+                           progress=progress)
 
-@app.route('/api/get_page/<filename>/<int:page>', methods=['GET'])
-def get_page(filename, page):
+@app.route('/api/page/<filename>/<int:page_number>')
+def get_page(filename, page_number):
     """API endpoint to get specific page content"""
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    page_index = max(0, page - 1)  # Convert to 0-index
+    metadata_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{filename}.meta.json")
+    
+    if not os.path.exists(filepath):
+        return jsonify({'error': 'File not found'}), 404
     
     try:
         doc = pymupdf.open(filepath)
         total_pages = len(doc)
         
-        if page_index >= total_pages:
-            return jsonify({'error': 'Page out of range'}), 400
+        # Validate page number
+        if page_number < 1:
+            page_number = 1
+        elif page_number > total_pages:
+            page_number = total_pages
         
-        page_content = doc[page_index].get_text()
+        # Get page content
+        page = doc[page_number - 1]  # 0-indexed
+        content = page.get_text()
         doc.close()
+        
+        # Load and update metadata
+        metadata = {}
+        if os.path.exists(metadata_path):
+            with open(metadata_path, 'r') as f:
+                metadata = json.load(f)
+        
+        # Update current page and progress
+        metadata['current_page'] = page_number
+        metadata['progress'] = int((page_number / total_pages) * 100) if total_pages > 0 else 0
+        
+        # Save updated metadata
+        with open(metadata_path, 'w') as f:
+            json.dump(metadata, f, indent=4, default=str)
         
         return jsonify({
             'success': True,
-            'page': page,
-            'content': page_content,
-            'total_pages': total_pages
+            'content': content,
+            'page_number': page_number,
+            'total_pages': total_pages,
+            'progress': metadata['progress'],
+            'metadata': metadata
         })
+        
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/toc/<filename>')
+def get_toc(filename):
+    """Get table of contents for EPUB files"""
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    
+    if not os.path.exists(filepath):
+        return jsonify({'error': 'File not found'}), 404
+    
+    try:
+        if filename.lower().endswith('.epub'):
+            # For EPUB files, try to get TOC
+            doc = pymupdf.open(filepath)
+            toc = doc.get_toc()
+            doc.close()
+            
+            # Format TOC entries
+            formatted_toc = []
+            for entry in toc:
+                level, title, page = entry
+                formatted_toc.append({
+                    'level': level,
+                    'title': title,
+                    'page': page
+                })
+            
+            return jsonify({
+                'success': True,
+                'toc': formatted_toc
+            })
+        else:
+            # For PDF files, generate a simple TOC based on page numbers
+            doc = pymupdf.open(filepath)
+            total_pages = len(doc)
+            doc.close()
+            
+            # Generate simple TOC (every 10 pages)
+            toc = []
+            for page_num in range(1, total_pages + 1, 10):
+                toc.append({
+                    'level': 1,
+                    'title': f'Page {page_num}',
+                    'page': page_num
+                })
+            
+            return jsonify({
+                'success': True,
+                'toc': toc
+            })
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/save_progress/<filename>', methods=['POST'])
+def save_progress(filename):
+    """Save reading progress (bookmark)"""
+    metadata_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{filename}.meta.json")
+    
+    if not os.path.exists(metadata_path):
+        return jsonify({'error': 'Book not found'}), 404
+    
+    try:
+        data = request.get_json()
+        current_page = data.get('current_page', 1)
+        
+        # Load existing metadata
+        with open(metadata_path, 'r') as f:
+            metadata = json.load(f)
+        
+        # Update progress
+        metadata['current_page'] = current_page
+        metadata['last_read'] = datetime.now().isoformat()
+        
+        # Save updated metadata
+        with open(metadata_path, 'w') as f:
+            json.dump(metadata, f, indent=4, default=str)
+        
+        return jsonify({'success': True, 'message': 'Progress saved'})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/library')
+def library():
+    """Show user's library of uploaded books"""
+    library_books = []
+    
+    if os.path.exists(app.config['UPLOAD_FOLDER']):
+        for filename in os.listdir(app.config['UPLOAD_FOLDER']):
+            if filename.endswith('.meta.json'):
+                metadata_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                try:
+                    with open(metadata_path, 'r') as f:
+                        metadata = json.load(f)
+                    
+                    # Check if the actual file exists
+                    book_filename = metadata.get('filename')
+                    book_path = os.path.join(app.config['UPLOAD_FOLDER'], book_filename)
+                    
+                    if os.path.exists(book_path):
+                        library_books.append(metadata)
+                        
+                except Exception as e:
+                    print(f"Error loading metadata for {filename}: {e}")
+    
+    return render_template('library.html', books=library_books)
+
+# ===== STATIC FILES =====
+
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
-    """Serve uploaded files (optional - for direct file access)"""
+    """Serve uploaded files"""
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 @app.errorhandler(404)
 def not_found(error):
-    return jsonify({'error': 'Page not found'}), 404
-
-@app.errorhandler(405)
-def method_not_allowed(error):
-    return jsonify({'error': 'Method not allowed for this endpoint'}), 405
+    return redirect(url_for('home'))
 
 @app.errorhandler(500)
 def server_error(error):
-    return jsonify({'error': 'Internal server error'}), 500
-
-# ===== APPLICATION START =====
+    return redirect(url_for('home'))
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
