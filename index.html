@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Inicio de Sesión Moderno</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen">
+<div class="relative flex h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden max-w-[480px] mx-auto shadow-2xl">
+<!-- Top App Bar (iOS Style) -->
+<div class="flex items-center bg-transparent p-4 pb-2 justify-between">
+<div class="text-white flex size-12 shrink-0 items-center justify-start cursor-pointer">
+<span class="material-symbols-outlined text-white dark:text-white">chevron_left</span>
+</div>
+<h2 class="text-white dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">Acceso</h2>
+</div>
+<div class="flex-1 overflow-y-auto pb-10">
+<!-- Profile Header / Logo Area -->
+<div class="flex p-4 @container mt-8">
+<div class="flex w-full flex-col gap-4 items-center">
+<div class="flex gap-4 flex-col items-center">
+<div class="relative flex items-center justify-center">
+<!-- High-tech circular logo placeholder -->
+<div class="bg-primary/10 border-2 border-primary/30 rounded-full h-32 w-32 flex items-center justify-center overflow-hidden shadow-[0_0_30px_rgba(19,91,236,0.2)]">
+<span class="material-symbols-outlined text-primary text-6xl" style="font-variation-settings: 'FILL' 1, 'wght' 200;">account_circle</span>
+</div>
+</div>
+<div class="flex flex-col items-center justify-center mt-2">
+<p class="text-white text-[28px] font-bold leading-tight tracking-[-0.015em] text-center">Bienvenido</p>
+<p class="text-[#9da6b9] text-base font-normal leading-normal text-center mt-1">Identifícate para continuar</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Form Fields Section -->
+<div class="mt-8 px-4 space-y-2">
+<!-- Email Field -->
+<div class="flex w-full flex-wrap items-end gap-4 py-3">
+<label class="flex flex-col min-w-40 flex-1">
+<p class="text-white text-sm font-medium leading-normal pb-2 px-1">Correo electrónico</p>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#3b4354] bg-[#1c1f27] focus:border-primary h-14 placeholder:text-[#9da6b9] p-[15px] text-base font-normal leading-normal transition-all duration-200" placeholder="ejemplo@correo.com" type="email"/>
+</label>
+</div>
+<!-- Password Field -->
+<div class="flex w-full flex-wrap items-end gap-4 py-3">
+<label class="flex flex-col min-w-40 flex-1">
+<div class="flex justify-between items-center pb-2 px-1">
+<p class="text-white text-sm font-medium leading-normal">Contraseña</p>
+<p class="text-primary text-xs font-medium cursor-pointer hover:underline">¿Olvidaste tu contraseña?</p>
+</div>
+<div class="flex w-full flex-1 items-stretch rounded-lg group">
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 focus:ring-r-0 border border-[#3b4354] bg-[#1c1f27] focus:border-primary h-14 placeholder:text-[#9da6b9] p-[15px] rounded-r-none border-r-0 pr-2 text-base font-normal leading-normal transition-all duration-200" placeholder="••••••••" type="password"/>
+<div class="text-[#9da6b9] flex border border-[#3b4354] bg-[#1c1f27] items-center justify-center pr-[15px] rounded-r-lg border-l-0 cursor-pointer hover:text-white transition-colors">
+<span class="material-symbols-outlined">visibility</span>
+</div>
+</div>
+</label>
+</div>
+</div>
+<!-- Main Action Button -->
+<div class="flex px-4 py-6 mt-4">
+<button class="flex min-w-[84px] w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 px-5 flex-1 bg-primary text-white text-lg font-bold leading-normal tracking-[0.015em] shadow-lg shadow-primary/20 active:scale-[0.98] transition-all">
+<span class="truncate">Iniciar Sesión</span>
+</button>
+</div>
+<!-- Footer / Register Link -->
+<div class="flex flex-col items-center justify-center mt-4">
+<p class="text-[#9da6b9] text-sm font-normal">
+                    ¿No tienes cuenta? 
+                    <a class="text-primary font-bold ml-1 hover:text-primary/80 transition-colors" href="#">Regístrate</a>
+</p>
+</div>
+</div>
+<!-- Home Indicator (iOS style) -->
+<div class="h-1.5 w-32 bg-white/20 rounded-full mx-auto mb-2 shrink-0"></div>
+</div>
+</body></html>
+
+
+
+
+
+
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative flex h-screen w-full flex-col overflow-hidden">
+<!-- TopAppBar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between z-10">
+<h2 class="text-black dark:text-white text-xl font-bold leading-tight tracking-[-0.015em] flex-1">Biblioteca</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-transparent text-primary gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 p-0">
+<span class="material-symbols-outlined text-3xl">menu</span>
+</button>
+</div>
+</div>
+<!-- Main Content Area -->
+<div class="flex-1 overflow-y-auto pb-24">
+<!-- ActionPanel (Trivia Feature) -->
+<div class="p-4 @container">
+<div class="flex flex-1 flex-col items-start justify-between gap-4 rounded-xl border border-primary/20 bg-primary/10 p-5 @[480px]:flex-row @[480px]:items-center">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">quiz</span>
+<p class="text-black dark:text-white text-base font-bold leading-tight">Trivia cada 5 capítulos</p>
+</div>
+<p class="text-gray-600 dark:text-[#9da6b9] text-sm font-normal leading-normal">¡Pon a prueba tu conocimiento mientras lees!</p>
+</div>
+<a class="text-sm font-bold leading-normal tracking-[0.015em] flex gap-2 text-primary" href="#">
+                        Ver más
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- ImageGrid (Books) -->
+<div class="grid grid-cols-2 gap-4 p-4">
+<div class="bg-cover bg-center flex flex-col gap-3 rounded-xl justify-end p-4 aspect-[3/4] shadow-lg shadow-black/20" data-alt="Classic book cover of Don Quixote with artistic illustration" style='background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 60%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuCspxh8kN4RrW4fosbYkSaoTFcf2KTjcuKdmBcvLDJ5ch4AxvCl9kaIeiQgg3g5sChG1v6pLk5e6zcMBPUoZbkQCDyfuv8NUHPgGROJUADcoC6HdZmi3JDYkpLRc3GdjRNOOaUyJgjDTG9qLFYphHWTuwW9WvCWifoY_EmOqgkeQvrKmwScwXCWu18FDYFMhnnmbOfus4qkkww-NTdu7M6UvwAqJV4opcO3qw8uJL5EfIuh3e3zukaOaG1YPAMhLVK7B86gPfsJZGWO");'>
+<p class="text-white text-sm font-bold leading-tight line-clamp-2">Don Quijote de la Mancha</p>
+</div>
+<div class="bg-cover bg-center flex flex-col gap-3 rounded-xl justify-end p-4 aspect-[3/4] shadow-lg shadow-black/20" data-alt="Dark dystopian book cover for 1984 by George Orwell" style='background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 60%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuC2Q-JMce5-ishwx6lXlJCVvRKMn8Ra4c0PT2vj41isOa967h8O9faZTqsnEf1mnUOVwk15HYcQORGwB8_rAIJ9h9Qx6AXGr6zrZXVtpfu5eL2iTRko88qqJwj2PE6CgMX7L2SjZk_7Py1fqOG_fh3tjyhbRfvuxV3_0SRycHnKTqxMODy3cq2vCeIxunCoAIkzIE84veME--DabDzDHH4DCYZiEz2a4t4FYRZRzRUT3qOaLnWwVE6sWEv7IDwclbcX4SksG16q8zcg");'>
+<p class="text-white text-sm font-bold leading-tight line-clamp-2">1984</p>
+</div>
+<div class="bg-cover bg-center flex flex-col gap-3 rounded-xl justify-end p-4 aspect-[3/4] shadow-lg shadow-black/20" data-alt="Whimsical book cover for The Little Prince with stars" style='background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 60%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuCLZkIzAH8nYf8K1sJAEGBsdV8leFSqGgvOX4-efUkTunVDZMz8FnPBcYeHkSyJwlk2Sxe7p2lo85p_d7hWBAE3GbtBsL-SOdaKUWtfoQIQwHmVGq-T43RfRgFaPYE5Z-v4cz8xHyDnzLjMkIo32-l7TV-DSG--fg-RiU1SqytG42uls1PwLhnvE9t1X4cdDgsEu3MGZjlQUqgfE1YPYcSNqUCY5C2N4YgmKxxFPtENeEoAhos1s2zQ52w156Zm9C9t0UrWIj2FBwd2");'>
+<p class="text-white text-sm font-bold leading-tight line-clamp-2">El Principito</p>
+</div>
+<div class="bg-cover bg-center flex flex-col gap-3 rounded-xl justify-end p-4 aspect-[3/4] shadow-lg shadow-black/20" data-alt="Classic fiction book cover with elegant typography" style='background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 60%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuB8x9LQcglQwfdwzM5wous3xATM6BMrWj8FgWNHXrRCoGgRPEK9Vklu2-nEKMHFw0LypD_Nb5E9l9utAppTTapRKnWbpbQvv29mqmVPpnqjl7YE_ngCsr5jAzY02l_lsF8RjpBylNxI1IFsTxeeaJcblsc4L81so07jYQl1icko3CP2Ea3CZuyDp5fyjMO2jBmk-mi-IV6Rd26A9ULlV7de4BYO2aJ4oERhIV3vqZEybIcKXceXwNeCefjqeI8yFPH1UV3hwyFD1T3m");'>
+<p class="text-white text-sm font-bold leading-tight line-clamp-2">Cien Años de Soledad</p>
+</div>
+</div>
+</div>
+<!-- FAB Section -->
+<div class="absolute bottom-0 left-0 w-full flex justify-end p-6 pointer-events-none">
+<button class="pointer-events-auto flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-6 bg-primary text-white text-base font-bold shadow-xl shadow-primary/30 transition-transform active:scale-95 gap-3">
+<span class="material-symbols-outlined">add</span>
+<span class="truncate">Importar (PDF/EPUB)</span>
+</button>
+</div>
+<!-- NavigationDrawer (Overlay State) -->
+<div class="absolute inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-end">
+<!-- Semi-transparent area to close menu by tapping -->
+<div class="flex-1"></div>
+<!-- Drawer Content -->
+<div class="h-full w-72 flex flex-col bg-background-light dark:bg-[#161b26] p-4 shadow-2xl">
+<div class="flex items-center justify-between mb-8 px-2">
+<h3 class="text-black dark:text-white text-lg font-bold">Opciones</h3>
+<button class="text-gray-500"><span class="material-symbols-outlined">close</span></button>
+</div>
+<ul class="flex flex-col gap-2">
+<li class="flex h-14 items-center gap-4 rounded-xl px-4 text-black dark:text-white hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-primary">person_outline</span>
+<p class="text-base font-medium leading-tight truncate">Cambiar cuenta</p>
+</li>
+<li class="flex h-14 items-center gap-4 rounded-xl px-4 bg-primary text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">upload_file</span>
+<p class="text-base font-medium leading-tight truncate">Importar libros</p>
+</li>
+<li class="mt-auto flex h-14 items-center gap-4 rounded-xl px-4 text-red-500 hover:bg-red-500/10 transition-colors">
+<span class="material-symbols-outlined">logout</span>
+<p class="text-base font-medium leading-tight truncate">Cerrar sesión</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</body></html>

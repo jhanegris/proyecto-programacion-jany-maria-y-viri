@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1317ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101122",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        @layer utilities {
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen">
+    <div class="relative flex flex-col min-h-screen w-full lg:max-w-6xl mx-auto md:px-6">
+        <header class="sticky top-0 z-20 flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md p-4 lg:py-8 justify-between border-b border-gray-200 dark:border-white/5">
+            <div class="flex items-center gap-4">
+                <div id="closeButton" class="text-primary flex size-10 items-center justify-center cursor-pointer hover:bg-primary/10 rounded-full transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </div>
+                <h2 class="hidden lg:block text-2xl font-bold tracking-tight">Añadir Nuevo Libro</h2>
+            </div>
+            <h2 class="lg:hidden text-lg font-bold leading-tight flex-1 text-center">Añadir Nuevo Libro</h2>
+            <div class="flex items-center gap-4">
+                <button id="clearButton" class="hidden lg:flex items-center gap-2 px-4 py-2 text-slate-500 dark:text-gray-400 hover:text-primary transition-colors font-medium">
+                    Limpiar campos
+                </button>
+                <div id="cancelButton" class="flex w-12 lg:w-auto items-center justify-end cursor-pointer">
+                    <p class="text-primary text-base font-bold leading-normal transition-opacity hover:opacity-80">Cancelar</p>
+                </div>
+            </div>
+        </header>
+        
+        <main class="flex-1 p-4 lg:py-8 overflow-y-auto scrollbar-hide">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+                <!-- File Upload Section -->
+                <div class="flex flex-col gap-6">
+                    <div class="hidden lg:block">
+                        <h3 class="text-xl font-bold mb-2">Archivo y Multimedia</h3>
+                        <p class="text-sm text-slate-500 dark:text-[#9293c9]">Comienza subiendo el manuscrito en formato digital.</p>
+                    </div>
+                    <div id="uploadArea" class="flex flex-col items-center gap-6 rounded-2xl border-2 border-dashed border-gray-300 dark:border-[#323367] bg-white/5 px-6 py-12 transition-all hover:bg-white/10 hover:border-primary/50 group">
+                        <div class="flex size-20 items-center justify-center rounded-full bg-primary/10 text-primary transition-transform group-hover:scale-110">
+                            <span class="material-symbols-outlined text-5xl">upload_file</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-2">
+                            <p class="text-slate-900 dark:text-white text-xl font-bold text-center">Sube tu archivo</p>
+                            <p class="text-slate-500 dark:text-[#9293c9] text-sm font-normal text-center">Formatos soportados: PDF o EPUB<br/>(Máximo 20MB)</p>
+                        </div>
+                        <button id="selectFileButton" class="flex min-w-[180px] cursor-pointer items-center justify-center rounded-xl h-12 px-8 bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20 transition-all hover:brightness-110 active:scale-95">
+                            <span class="truncate">Seleccionar Archivo</span>
+                        </button>
+                        <div id="fileInfo" class="mt-4 text-center">
+                            <p id="fileName" class="text-green-600 dark:text-green-400 font-medium hidden"></p>
+                            <p id="fileError" class="text-red-600 dark:text-red-400 font-medium hidden"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Book Details Section -->
+                <div class="flex flex-col gap-6">
+                    <div>
+                        <h3 class="text-xl lg:text-xl font-bold mb-6 text-slate-900 dark:text-white">Detalles del Libro</h3>
+                        <div class="space-y-6">
+                            <div class="flex flex-col gap-2">
+                                <label class="text-slate-700 dark:text-white text-sm font-medium">Título
+                                    <input id="titleInput" class="form-input w-full rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-primary border border-gray-300 dark:border-[#323367] bg-white dark:bg-[#191a33] h-14 placeholder:text-gray-400 dark:placeholder:text-[#9293c9] px-4 text-base transition-all" placeholder="Ej: El amor en los tiempos del cólera" type="text"/>
+                                </label>
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <label class="text-slate-700 dark:text-white text-sm font-medium">Autor
+                                    <input id="authorInput" class="form-input w-full rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-primary border border-gray-300 dark:border-[#323367] bg-white dark:bg-[#191a33] h-14 placeholder:text-gray-400 dark:placeholder:text-[#9293c9] px-4 text-base transition-all" placeholder="Ej: Gabriel García Márquez" type="text"/>
+                                </label>
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <label class="text-slate-700 dark:text-white text-sm font-medium">Género
+                                    <div class="relative">
+                                        <select id="genreSelect" class="form-select w-full appearance-none rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-primary border border-gray-300 dark:border-[#323367] bg-white dark:bg-[#191a33] h-14 px-4 text-base transition-all">
+                                            <option disabled selected value="">Selecciona un género</option>
+                                            <option value="ficcion">Ficción</option>
+                                            <option value="no-ficcion">No Ficción</option>
+                                            <option value="fantasia">Fantasía</option>
+                                            <option value="misterio">Misterio</option>
+                                            <option value="biografia">Biografía</option>
+                                        </select>
+                                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 dark:text-[#9293c9]">
+                                            <span class="material-symbols-outlined">expand_more</span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="flex items-center justify-between p-5 rounded-2xl bg-white dark:bg-white/5 border border-gray-200 dark:border-white/5 mt-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="p-2 bg-primary/10 rounded-lg">
+                                        <span class="material-symbols-outlined text-primary">public</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold dark:text-white text-slate-900">Visibilidad Pública</p>
+                                        <p class="text-xs dark:text-gray-400 text-slate-500">Otros usuarios podrán ver este libro</p>
+                                    </div>
+                                </div>
+                                <div class="relative inline-flex items-center cursor-pointer">
+                                    <input id="visibilityToggle" checked class="sr-only peer" type="checkbox" value="on"/>
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="h-32 lg:h-12"></div>
+        </main>
+        
+        <footer class="fixed lg:sticky bottom-0 left-0 lg:left-auto w-full lg:w-full p-4 lg:px-0 lg:pb-12 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md lg:bg-transparent lg:backdrop-blur-none border-t lg:border-t-0 border-white/5 z-20">
+            <div class="max-w-[480px] lg:max-w-none mx-auto">
+                <button id="saveButton" class="flex w-full cursor-pointer items-center justify-center rounded-2xl h-16 px-6 bg-primary text-white text-lg font-bold shadow-2xl shadow-primary/40 transition-all hover:brightness-110 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]">
+                    <span class="material-symbols-outlined mr-3 text-2xl">library_add</span>
+                    <span class="truncate">Guardar en Biblioteca</span>
+                </button>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Hidden File Input -->
+    <input id="fileInput" type="file" accept=".pdf,.epub" style="display: none;">
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // ===== ELEMENT REFERENCES =====
+            const fileInput = document.getElementById('fileInput');
+            const selectFileButton = document.getElementById('selectFileButton');
+            const saveButton = document.getElementById('saveButton');
+            const closeButton = document.getElementById('closeButton');
+            const cancelButton = document.getElementById('cancelButton');
+            const clearButton = document.getElementById('clearButton');
+            const fileNameDisplay = document.getElementById('fileName');
+            const fileErrorDisplay = document.getElementById('fileError');
+            const uploadArea = document.getElementById('uploadArea');
+            
+            // Form fields
+            const titleInput = document.getElementById('titleInput');
+            const authorInput = document.getElementById('authorInput');
+            const genreSelect = document.getElementById('genreSelect');
+            const visibilityToggle = document.getElementById('visibilityToggle');
+            
+            // ===== EVENT LISTENERS =====
+            
+            // 1. File selection
+            selectFileButton.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            uploadArea.addEventListener('click', (e) => {
+                if (e.target === uploadArea || e.target.closest('p')) {
+                    fileInput.click();
+                }
+            });
+            
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            // 2. Save button
+            saveButton.addEventListener('click', handleSave);
+            
+            // 3. Cancel/Close buttons
+            closeButton.addEventListener('click', confirmCancel);
+            cancelButton.addEventListener('click', confirmCancel);
+            
+            // 4. Clear button
+            if (clearButton) {
+                clearButton.addEventListener('click', clearFields);
+            }
+            
+            // ===== FUNCTIONS =====
+            
+            function handleFileSelect(event) {
+                const file = event.target.files[0];
+                fileErrorDisplay.classList.add('hidden');
+                fileErrorDisplay.textContent = '';
+                
+                if (file) {
+                    // Check file size (20MB max)
+                    if (file.size > 20 * 1024 * 1024) {
+                        showError('El archivo excede el límite de 20MB');
+                        return;
+                    }
+                    
+                    // Check file type
+                    const fileExt = file.name.split('.').pop().toLowerCase();
+                    if (!['pdf', 'epub'].includes(fileExt)) {
+                        showError('Solo se permiten archivos PDF y EPUB');
+                        return;
+                    }
+                    
+                    // Display file name
+                    fileNameDisplay.textContent = `Archivo seleccionado: ${file.name}`;
+                    fileNameDisplay.classList.remove('hidden');
+                    
+                    // Auto-fill title if empty
+                    if (!titleInput.value.trim()) {
+                        const title = file.name.replace(/\.[^/.]+$/, ""); // Remove extension
+                        titleInput.value = title;
+                    }
+                    
+                    // Visual feedback
+                    uploadArea.classList.remove('border-gray-300', 'dark:border-[#323367]');
+                    uploadArea.classList.add('border-green-500');
+                } else {
+                    fileNameDisplay.classList.add('hidden');
+                    uploadArea.classList.remove('border-green-500');
+                    uploadArea.classList.add('border-gray-300', 'dark:border-[#323367]');
+                }
+            }
+            
+            function showError(message) {
+                fileErrorDisplay.textContent = message;
+                fileErrorDisplay.classList.remove('hidden');
+                fileNameDisplay.classList.add('hidden');
+                
+                // Visual feedback
+                uploadArea.classList.remove('border-gray-300', 'dark:border-[#323367]', 'border-green-500');
+                uploadArea.classList.add('border-red-500');
+                
+                // Reset after 3 seconds
+                setTimeout(() => {
+                    uploadArea.classList.remove('border-red-500');
+                    uploadArea.classList.add('border-gray-300', 'dark:border-[#323367]');
+                }, 3000);
+            }
+            
+            async function handleSave() {
+                const file = fileInput.files[0];
+                
+                if (!file) {
+                    showError('Por favor, selecciona un archivo primero');
+                    return;
+                }
+                
+                // Create FormData
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('title', titleInput.value);
+                formData.append('author', authorInput.value);
+                formData.append('genre', genreSelect.value);
+                formData.append('public', visibilityToggle.checked ? 'on' : 'off');
+                
+                // Show loading state
+                const originalHTML = saveButton.innerHTML;
+                const originalClasses = saveButton.className;
+                saveButton.innerHTML = '<span class="material-symbols-outlined mr-3 text-2xl animate-spin">sync</span><span>Subiendo...</span>';
+                saveButton.disabled = true;
+                saveButton.classList.remove('hover:brightness-110', 'hover:-translate-y-0.5');
+                
+                try {
+                    // Send POST request to /upload
+                    const response = await fetch('/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Success state
+                        saveButton.innerHTML = '<span class="material-symbols-outlined mr-3 text-2xl">check_circle</span><span>¡Subido!</span>';
+                        saveButton.className = saveButton.className.replace('bg-primary', 'bg-green-600');
+                        
+                        // Redirect after delay
+                        setTimeout(() => {
+                            window.location.href = result.redirect;
+                        }, 1500);
+                    } else {
+                        // Error state
+                        showError(result.error || 'Error al subir el archivo');
+                        resetSaveButton(originalHTML, originalClasses);
+                    }
+                } catch (error) {
+                    // Network error
+                    showError('Error de red: ' + error.message);
+                    resetSaveButton(originalHTML, originalClasses);
+                }
+            }
+            
+            function resetSaveButton(originalHTML, originalClasses) {
+                saveButton.innerHTML = originalHTML;
+                saveButton.disabled = false;
+                saveButton.className = originalClasses;
+                saveButton.classList.add('hover:brightness-110', 'hover:-translate-y-0.5');
+            }
+            
+            function confirmCancel() {
+                if (fileInput.files.length > 0 || 
+                    titleInput.value.trim() || 
+                    authorInput.value.trim() || 
+                    genreSelect.value) {
+                    if (confirm('¿Estás seguro de que quieres cancelar? Se perderán los cambios no guardados.')) {
+                        window.location.href = '/';
+                    }
+                } else {
+                    window.location.href = '/';
+                }
+            }
+            
+            function clearFields() {
+                if (confirm('¿Limpiar todos los campos?')) {
+                    fileInput.value = '';
+                    fileNameDisplay.classList.add('hidden');
+                    titleInput.value = '';
+                    authorInput.value = '';
+                    genreSelect.value = '';
+                    visibilityToggle.checked = true;
+                    
+                    // Reset upload area
+                    uploadArea.classList.remove('border-green-500', 'border-red-500');
+                    uploadArea.classList.add('border-gray-300', 'dark:border-[#323367]');
+                    
+                    fileErrorDisplay.classList.add('hidden');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
